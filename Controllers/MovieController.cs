@@ -4,33 +4,79 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ProjectAPI.Services;
+using Microsoft.EntityFrameworkCore;
 using ProjectAPI.Models;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectAPI.Controllers
 {
-    [Route("api/[controller]/[action]/{id?}")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class MovieController : ControllerBase
     {
 
         private MovieContext db = new MovieContext();
 
+        private bool MovieExists(int id)
+        {
+            return db.Movies.Any(e => e.id == id);
+        }
+
         [HttpGet]
-        public List<Movie> all()
+        public List<Movie> GetMovies()
         {
             return db.Movies.ToList();
         }
 
-        [HttpGet]
-        public Movie Index(int? id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Movie>> GetMovie(int id)
         {
-            if (id == null)
+            var movie = await db.Movies.FindAsync(id);
+            if (movie == null)
             {
-                return null;
+                return NotFound();
             }
 
-            return db.Movies.Find(id);
+            return movie;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Movie>> PostMovie(Movie movie)
+        {
+            db.Movies.Add(movie);
+            await db.SaveChangesAsync();
+
+            return CreatedAtAction("GetMovie", new { id = movie.id }, movie);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMovie(int id, Movie movie)
+        {
+            if (id != movie.id)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(movie).State = EntityState.Modified;
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MovieExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
     }

@@ -79,5 +79,29 @@ namespace ProjectAPI.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMovie(int id)
+        {
+            try
+            {
+                var movie = db.Movies.FirstOrDefault(m => m.id == id);
+
+                if (movie == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    db.Movies.Remove(movie);
+                    await db.SaveChangesAsync();
+                    return Ok();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
     }
 }

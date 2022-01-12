@@ -79,6 +79,9 @@ namespace ProjectAPI.Migrations.Movie
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("email")
                         .HasColumnType("TEXT");
 

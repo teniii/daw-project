@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using ProjectAPI.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace ProjectAPI.Controllers
 {
@@ -21,6 +23,15 @@ namespace ProjectAPI.Controllers
         private bool UserExists(int id)
         {
             return db.Users.Any(e => e.id == id);
+        }
+
+        [HttpGet("Admins")]
+        // [Authorize(Roles = "admin")]
+        [Authorize]
+        public IActionResult AdminsEndpoint()
+        {
+            var currentUser = GetCurrentUser();
+            return Ok($"Hi {currentUser.name}, you are an {currentUser.Role}");
         }
 
         [HttpGet]
@@ -101,6 +112,26 @@ namespace ProjectAPI.Controllers
             {
                 return BadRequest(e);
             }
+        }
+
+        private User GetCurrentUser()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+
+                return new User
+                {
+                    username = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value,
+                    email = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value,
+                    name = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Name)?.Value,
+                    surname = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Surname)?.Value,
+                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value
+                };
+            }
+            return null;
         }
 
     }

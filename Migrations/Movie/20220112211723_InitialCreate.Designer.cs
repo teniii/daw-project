@@ -9,7 +9,7 @@ using ProjectAPI.Models;
 namespace ProjectAPI.Migrations.Movie
 {
     [DbContext(typeof(MovieContext))]
-    [Migration("20220110121942_InitialCreate")]
+    [Migration("20220112211723_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,9 @@ namespace ProjectAPI.Migrations.Movie
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("email")
                         .HasColumnType("TEXT");

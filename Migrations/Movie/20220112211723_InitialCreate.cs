@@ -30,7 +30,8 @@ namespace ProjectAPI.Migrations.Movie
                     surname = table.Column<string>(type: "TEXT", nullable: true),
                     username = table.Column<string>(type: "TEXT", nullable: true),
                     email = table.Column<string>(type: "TEXT", nullable: true),
-                    password = table.Column<string>(type: "TEXT", nullable: true)
+                    password = table.Column<string>(type: "TEXT", nullable: true),
+                    Role = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

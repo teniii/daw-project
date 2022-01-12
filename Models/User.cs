@@ -13,6 +13,7 @@ namespace ProjectAPI.Models
         public string email { get; set; }
 
         public string password { get; set; }
+        public string Role { get; set; }
 
         public List<Movie> Movies { get; private set; } = new List<Movie>();
     }

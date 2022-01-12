@@ -151,3 +151,4 @@
 /Users/alexandrutenita/Documents/Facultate/AN4/daw/DAWProject/ProjectAPI/bin/Debug/net5.0/runtimes/win-arm64/native/e_sqlite3.dll
 /Users/alexandrutenita/Documents/Facultate/AN4/daw/DAWProject/ProjectAPI/bin/Debug/net5.0/runtimes/win-x64/native/e_sqlite3.dll
 /Users/alexandrutenita/Documents/Facultate/AN4/daw/DAWProject/ProjectAPI/bin/Debug/net5.0/runtimes/win-x86/native/e_sqlite3.dll
+/Users/alexandrutenita/Documents/Facultate/AN4/daw/DAWProject/ProjectAPI/bin/Debug/net5.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

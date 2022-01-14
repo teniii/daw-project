@@ -51,6 +51,11 @@ namespace ProjectAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    // webBuilder.UseKestrel(options =>
+                    // {
+                    //     options.Listen(System.Net.IPAddress.Loopback, 5080); // for HTTP
+                    //     options.Listen(System.Net.IPAddress.Loopback, 5443); // for HTTPS
+                    // });
                     webBuilder.UseStartup<Startup>();
                 });
     }

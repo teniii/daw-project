@@ -49,6 +49,12 @@ namespace ProjectAPI
             services.AddControllers();
             services.AddTransient<Covid19Service>();
 
+            // allow the frontend to communicate with backend
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "allowed_origins", policyBuilder => { policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build(); });
+            });
+
             /*
                     DISABLE SWAGGER
             */
@@ -79,6 +85,15 @@ namespace ProjectAPI
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, HEAD, DELETE, PATCH");
+                await next();
+            });
 
             app.UseEndpoints(endpoints =>
             {

@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using ProjectAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -47,7 +46,6 @@ namespace ProjectAPI
             services.AddMvc();
 
             services.AddControllers();
-            services.AddTransient<Covid19Service>();
 
             // allow the frontend to communicate with backend
             services.AddCors(options =>

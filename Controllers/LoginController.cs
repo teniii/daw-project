@@ -11,9 +11,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 namespace ProjectAPI.Controllers
 {
+    [DisableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -27,6 +29,7 @@ namespace ProjectAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [DisableCors]
         public IActionResult Login([FromBody] UserLogin userLogin)
         {
             var user = Authenticate(userLogin);
@@ -43,7 +46,7 @@ namespace ProjectAPI.Controllers
         private string Generate(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha384);
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {

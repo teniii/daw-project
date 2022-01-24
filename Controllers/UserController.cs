@@ -25,13 +25,13 @@ namespace ProjectAPI.Controllers
             return db.Users.Any(e => e.id == id);
         }
 
-        [HttpGet("Admins")]
-        // [Authorize(Roles = "admin")]
-        [Authorize]
+        [HttpGet("admins")]
+        // [Authorize]
+        [Authorize(Roles = "admin")]
         public IActionResult AdminsEndpoint()
         {
             var currentUser = GetCurrentUser();
-            return Ok($"Hi {currentUser.name}, you are an {currentUser.Role}");
+            return Ok($"Hi {currentUser.name}, you are an {currentUser.Role }");
         }
 
         [HttpGet]

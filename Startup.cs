@@ -50,7 +50,11 @@ namespace ProjectAPI
             // allow the frontend to communicate with backend
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "allowed_origins", policyBuilder => { policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build(); });
+                // options.AddPolicy(name: "allowed_origins", policyBuilder => { policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build(); });
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:3001", "http://localhost:3001").AllowAnyHeader().AllowAnyMethod();
+                });
             });
 
             /*
@@ -82,9 +86,9 @@ namespace ProjectAPI
 
             app.UseAuthentication();
 
-            app.UseAuthorization();
-
             app.UseCors();
+
+            app.UseAuthorization();
 
             app.Use(async (context, next) =>
             {

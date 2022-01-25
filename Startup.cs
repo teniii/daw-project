@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ProjectAPI.Core.IConfiguration;
+using ProjectAPI.Data;
 
 namespace ProjectAPI
 {
@@ -65,6 +67,8 @@ namespace ProjectAPI
             // {
             //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjectAPI", Version = "v1" });
             // });
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

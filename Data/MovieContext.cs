@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using ProjectAPI.Models;
 
-namespace ProjectAPI.Models
+namespace ProjectAPI.Data
 {
     public class MovieContext : DbContext
     {

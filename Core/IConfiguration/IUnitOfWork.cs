@@ -8,6 +8,8 @@ namespace ProjectAPI.Core.IConfiguration
         IUserRepository Users { get; }
         IMovieRepository Movies { get; }
 
+        IParticipantRepository Participants { get; }
+
         Task CompleteAsync();
     }
 }

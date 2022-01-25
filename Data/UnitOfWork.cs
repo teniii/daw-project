@@ -16,6 +16,8 @@ namespace ProjectAPI.Data
 
         public IMovieRepository Movies { get; private set; }
 
+        public IParticipantRepository Participants { get; private set; }
+
         public UnitOfWork(
             MovieContext context,
             ILoggerFactory loggerFactory
@@ -26,6 +28,7 @@ namespace ProjectAPI.Data
 
             Users = new UserRepository(_context, _logger);
             Movies = new MovieRepository(_context, _logger);
+            Participants = new ParticipantRepository(_context, _logger);
         }
 
         public async Task CompleteAsync()

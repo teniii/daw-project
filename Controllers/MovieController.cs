@@ -41,6 +41,15 @@ namespace ProjectAPI.Controllers
             return movie;
         }
 
+
+        [HttpGet("latest")]
+        public List<Movie> GetLatestMovies()
+        {
+            return db.Movies.Where(movie => movie.release_date.Year == DateTime.Now.Year).ToList();
+        }
+
+
+
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {

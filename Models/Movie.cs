@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 
 namespace ProjectAPI.Models
 {
@@ -7,7 +8,7 @@ namespace ProjectAPI.Models
         public int id { get; set; }
         public string title { get; set; }
 
-        public string release_date { get; set; }
+        public DateTime release_date { get; set; }
 
         public List<User> Users { get; private set; } = new List<User>();
 

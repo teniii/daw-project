@@ -11,6 +11,7 @@ namespace ProjectAPI.Models
 
         public string date_of_birth { get; set; }
 
+        public Address fan_mail_address { get; set; }
 
     }
 }

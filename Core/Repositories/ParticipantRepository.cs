@@ -20,6 +20,11 @@ namespace ProjectAPI.Core.Repositories
 
         }
 
+        public bool ParticipantExists(int id)
+        {
+            return dbSet.Any(e => e.id == id);
+        }
+
         public override async Task<IEnumerable<Participant>> All()
         {
             try
@@ -57,7 +62,7 @@ namespace ProjectAPI.Core.Repositories
             }
         }
 
-        public override async Task<bool> Delete(Guid id)
+        public override async Task<bool> Delete(int id)
         {
             try
             {

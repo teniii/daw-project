@@ -9,6 +9,7 @@ using ProjectAPI.Data;
 using ProjectAPI.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using ProjectAPI.Core.IConfiguration;
 
 namespace ProjectAPI.Controllers
 {
@@ -16,24 +17,23 @@ namespace ProjectAPI.Controllers
     [ApiController]
     public class ParticipantController : ControllerBase
     {
-
-        private MovieContext db = new MovieContext();
-
-        private bool ParticipantExists(int id)
+        private readonly IUnitOfWork _unitOfWork;
+        public ParticipantController(IUnitOfWork unitOfWork)
         {
-            return db.Participants.Any(e => e.id == id);
+            _unitOfWork = unitOfWork;
         }
 
+
         [HttpGet]
-        public List<Participant> GetParticipants()
+        public Task<IEnumerable<Participant>> GetParticipants()
         {
-            return db.Participants.ToList();
+            return _unitOfWork.Participants.All();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Participant>> GetParticipant(int id)
         {
-            var participant = await db.Participants.FindAsync(id);
+            var participant = await _unitOfWork.Participants.GetById(id);
             if (participant == null)
             {
                 return NotFound();
@@ -45,8 +45,8 @@ namespace ProjectAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Participant>> PostParticipant(Participant participant)
         {
-            db.Participants.Add(participant);
-            await db.SaveChangesAsync();
+            await _unitOfWork.Participants.Add(participant);
+            await _unitOfWork.CompleteAsync();
 
             return CreatedAtAction("GetParticipant", new { id = participant.id }, participant);
         }
@@ -59,15 +59,14 @@ namespace ProjectAPI.Controllers
                 return BadRequest();
             }
 
-            db.Entry(participant).State = EntityState.Modified;
-
             try
             {
-                await db.SaveChangesAsync();
+                await _unitOfWork.Participants.Update(participant);
+                await _unitOfWork.CompleteAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ParticipantExists(id))
+                if (!_unitOfWork.Participants.ParticipantExists(id))
                 {
                     return NotFound();
                 }
@@ -85,16 +84,14 @@ namespace ProjectAPI.Controllers
         {
             try
             {
-                var participant = db.Participants.FirstOrDefault(m => m.id == id);
-
-                if (participant == null)
+                if (_unitOfWork.Participants.ParticipantExists(id))
                 {
                     return NotFound();
                 }
                 else
                 {
-                    db.Participants.Remove(participant);
-                    await db.SaveChangesAsync();
+                    await _unitOfWork.Participants.Delete(id);
+                    await _unitOfWork.CompleteAsync();
                     return Ok();
                 }
             }

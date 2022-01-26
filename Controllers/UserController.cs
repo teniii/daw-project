@@ -10,7 +10,7 @@ using ProjectAPI.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-
+using ProjectAPI.Core.IConfiguration;
 
 namespace ProjectAPI.Controllers
 {
@@ -19,15 +19,14 @@ namespace ProjectAPI.Controllers
     public class UserController : ControllerBase
     {
 
-        private MovieContext db = new MovieContext();
-
-        private bool UserExists(int id)
+        private readonly IUnitOfWork _unitOfWork;
+        public UserController(IUnitOfWork unitOfWork)
         {
-            return db.Users.Any(e => e.id == id);
+            _unitOfWork = unitOfWork;
         }
 
+
         [HttpGet("admins")]
-        // [Authorize]
         [Authorize(Roles = "admin")]
         public IActionResult AdminsEndpoint()
         {
@@ -36,15 +35,15 @@ namespace ProjectAPI.Controllers
         }
 
         [HttpGet]
-        public List<User> GetUsers()
+        public Task<IEnumerable<User>> GetUsers()
         {
-            return db.Users.ToList();
+            return _unitOfWork.Users.All();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await db.Users.FindAsync(id);
+            var user = await _unitOfWork.Users.GetById(id);
             if (user == null)
             {
                 return NotFound();
@@ -56,8 +55,8 @@ namespace ProjectAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
+            await _unitOfWork.Users.Add(user);
+            await _unitOfWork.CompleteAsync();
 
             return CreatedAtAction("GetUser", new { id = user.id }, user);
         }
@@ -70,15 +69,13 @@ namespace ProjectAPI.Controllers
                 return BadRequest();
             }
 
-            db.Entry(user).State = EntityState.Modified;
-
             try
             {
-                await db.SaveChangesAsync();
+                await _unitOfWork.Users.Update(user);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!_unitOfWork.Users.UserExists(id))
                 {
                     return NotFound();
                 }
@@ -96,16 +93,15 @@ namespace ProjectAPI.Controllers
         {
             try
             {
-                var user = db.Users.FirstOrDefault(m => m.id == id);
 
-                if (user == null)
+                if (!_unitOfWork.Users.UserExists(id))
                 {
                     return NotFound();
                 }
                 else
                 {
-                    db.Users.Remove(user);
-                    await db.SaveChangesAsync();
+                    await _unitOfWork.Users.Delete(id);
+                    await _unitOfWork.CompleteAsync();
                     return Ok();
                 }
             }

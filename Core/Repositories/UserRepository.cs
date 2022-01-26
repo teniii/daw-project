@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 using ProjectAPI.Core.IRepositories;
 using ProjectAPI.Data;
 using ProjectAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace ProjectAPI.Core.Repositories
 {
@@ -18,6 +21,16 @@ namespace ProjectAPI.Core.Repositories
         ) : base(context, logger)
         {
 
+        }
+
+        public bool UserExists(int id)
+        {
+            return dbSet.Any(e => e.id == id);
+        }
+
+        public List<User> Admins()
+        {
+            return dbSet.Where(e => e.Role == "admin").ToList();
         }
 
         public override async Task<IEnumerable<User>> All()
@@ -57,7 +70,7 @@ namespace ProjectAPI.Core.Repositories
             }
         }
 
-        public override async Task<bool> Delete(Guid id)
+        public override async Task<bool> Delete(int id)
         {
             try
             {

@@ -9,6 +9,7 @@ using ProjectAPI.Data;
 using ProjectAPI.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using ProjectAPI.Core.IConfiguration;
 
 namespace ProjectAPI.Controllers
 {
@@ -16,24 +17,22 @@ namespace ProjectAPI.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-
-        private MovieContext db = new MovieContext();
-
-        private bool MovieExists(int id)
+        private readonly IUnitOfWork _unitOfWork;
+        public MovieController(IUnitOfWork unitOfWork)
         {
-            return db.Movies.Any(e => e.id == id);
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public List<Movie> GetMovies()
+        public Task<IEnumerable<Movie>> GetMovies()
         {
-            return db.Movies.ToList();
+            return _unitOfWork.Movies.All();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
         {
-            var movie = await db.Movies.FindAsync(id);
+            var movie = await _unitOfWork.Movies.GetById(id);
             if (movie == null)
             {
                 return NotFound();
@@ -46,7 +45,7 @@ namespace ProjectAPI.Controllers
         [HttpGet("latest")]
         public List<Movie> GetLatestMovies()
         {
-            return db.Movies.Where(movie => movie.release_date.Year == DateTime.Now.Year).ToList();
+            return _unitOfWork.Movies.Latest();
         }
 
 
@@ -54,8 +53,8 @@ namespace ProjectAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-            db.Movies.Add(movie);
-            await db.SaveChangesAsync();
+            await _unitOfWork.Movies.Add(movie);
+            await _unitOfWork.CompleteAsync();
 
             return CreatedAtAction("GetMovie", new { id = movie.id }, movie);
         }
@@ -68,15 +67,14 @@ namespace ProjectAPI.Controllers
                 return BadRequest();
             }
 
-            db.Entry(movie).State = EntityState.Modified;
-
             try
             {
-                await db.SaveChangesAsync();
+                await _unitOfWork.Movies.Update(movie);
+                await _unitOfWork.CompleteAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MovieExists(id))
+                if (!_unitOfWork.Movies.MovieExists(id))
                 {
                     return NotFound();
                 }
@@ -94,16 +92,15 @@ namespace ProjectAPI.Controllers
         {
             try
             {
-                var movie = db.Movies.FirstOrDefault(m => m.id == id);
 
-                if (movie == null)
+                if (!_unitOfWork.Movies.MovieExists(id))
                 {
                     return NotFound();
                 }
                 else
                 {
-                    db.Movies.Remove(movie);
-                    await db.SaveChangesAsync();
+                    await _unitOfWork.Movies.Delete(id);
+                    await _unitOfWork.CompleteAsync();
                     return Ok();
                 }
             }

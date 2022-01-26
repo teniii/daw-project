@@ -33,7 +33,7 @@ namespace ProjectAPI.Core.Repositories
             }
         }
 
-        public override async Task<bool> Upsert(User entity)
+        public override async Task<bool> Update(User entity)
         {
             try
             {

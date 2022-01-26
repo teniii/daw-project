@@ -29,7 +29,7 @@ namespace ProjectAPI.Core.Repositories
             return await dbSet.ToListAsync();
         }
 
-        public virtual async Task<T> GetById(Guid id)
+        public virtual async Task<T> GetById(int id)
         {
             return await dbSet.FindAsync(id);
         }
@@ -40,12 +40,12 @@ namespace ProjectAPI.Core.Repositories
             return true;
         }
 
-        public virtual Task<bool> Delete(Guid id)
+        public virtual Task<bool> Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<bool> Upsert(T entity)
+        public virtual Task<bool> Update(T entity)
         {
             throw new NotImplementedException();
         }

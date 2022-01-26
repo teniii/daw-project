@@ -20,6 +20,16 @@ namespace ProjectAPI.Core.Repositories
 
         }
 
+        public bool MovieExists(int id)
+        {
+            return dbSet.Any(e => e.id == id);
+        }
+
+        public List<Movie> Latest()
+        {
+            return dbSet.Where(e => e.release_date.Year == DateTime.Now.Year).ToList();
+        }
+
         public override async Task<IEnumerable<Movie>> All()
         {
             try
@@ -33,7 +43,7 @@ namespace ProjectAPI.Core.Repositories
             }
         }
 
-        public override async Task<bool> Upsert(Movie entity)
+        public override async Task<bool> Update(Movie entity)
         {
             try
             {
@@ -55,7 +65,7 @@ namespace ProjectAPI.Core.Repositories
             }
         }
 
-        public override async Task<bool> Delete(Guid id)
+        public override async Task<bool> Delete(int id)
         {
             try
             {
